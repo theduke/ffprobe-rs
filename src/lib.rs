@@ -199,4 +199,13 @@ pub struct FormatTags {
     pub compatible_brands: Option<String>,
     pub creation_time: Option<String>,
     pub encoder: Option<String>,
+    pub title: Option<String>,
+    pub artist: Option<String>,
+    pub album: Option<String>,
+    pub date: Option<String>,
+    pub album_artist: Option<String>,
+    pub copyright: Option<String>,
+    pub genre: Option<String>,
+    pub track: Option<String>,
+    pub disc: Option<String>,
 }
