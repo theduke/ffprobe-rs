@@ -25,7 +25,7 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
         let stderr = String::from_utf8_lossy(&out.stderr);
 
         Err(FfProbeError::new(format!(
-            "ffprobe with with status code {}: {}",
+            "ffprobe exited with status code {}: {}",
             out.status, stderr
         )))?;
     }
