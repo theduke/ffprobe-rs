@@ -83,7 +83,7 @@ pub struct Stream {
     pub nb_frames: Option<String>,
     pub codec_long_name: String,
     pub codec_type: String,
-    pub codec_time_base: String,
+    pub codec_time_base: Option<String>,
     pub codec_tag_string: String,
     pub codec_tag: String,
     pub sample_fmt: Option<String>,
