@@ -56,20 +56,14 @@ impl std::fmt::Display for FfProbeError {
 impl std::error::Error for FfProbeError {}
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct FfProbe {
     pub streams: Vec<Stream>,
     pub format: Format,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct Stream {
     pub index: i64,
     pub codec_name: String,
@@ -121,19 +115,13 @@ pub struct Stream {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct SideData {
     pub side_data_type: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct Disposition {
     pub default: i64,
     pub dub: i64,
@@ -150,10 +138,7 @@ pub struct Disposition {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct StreamTags {
     pub language: Option<String>,
     pub creation_time: Option<String>,
@@ -162,10 +147,7 @@ pub struct StreamTags {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct Format {
     pub filename: String,
     pub nb_streams: i64,
@@ -181,10 +163,7 @@ pub struct Format {
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
-#[cfg_attr(
-    feature = "__internal_deny_unknown_fields",
-    serde(deny_unknown_fields)
-)]
+#[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct FormatTags {
     #[serde(rename = "WMFSDKNeeded")]
     pub wmfsdkneeded: Option<String>,
