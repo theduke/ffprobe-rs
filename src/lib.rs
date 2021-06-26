@@ -24,10 +24,10 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
     if !out.status.success() {
         let stderr = String::from_utf8_lossy(&out.stderr);
 
-        Err(FfProbeError::new(format!(
+        return Err(FfProbeError::new(format!(
             "ffprobe exited with status code {}: {}",
             out.status, stderr
-        )))?;
+        )));
     }
 
     serde_json::from_slice::<FfProbe>(&out.stdout)
