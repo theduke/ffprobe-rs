@@ -4,6 +4,20 @@
 //! This crate allows retrieving typed information about media files (images and videos)
 //! by invoking `ffprobe` with JSON output options and deserializing the data
 //! into convenient Rust types.
+//!
+//!
+//! ```rust
+//! fn main() {
+//!     match ffprobe::ffprobe("path/to/video.mp4") {
+//!         Ok(info) => {
+//! 	        dbg!(info);
+//!         },
+//! 	    Err(err) => {
+//! 	        eprintln!("Could not analyze file with ffprobe: {:?}", err);
+//! 	    },
+//!     }
+//! }
+//! ```
 
 pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
     let path = path.as_ref();
