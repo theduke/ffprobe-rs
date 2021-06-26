@@ -1,7 +1,7 @@
 [package]
 name = "ffprobe"
 description = "Typed wrapper for the ffprobe CLI"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Christoph Herzog <chris@theduke.at>"]
 repository = "https://github.com/theduke/ffprobe-rs"
 edition = "2018"
