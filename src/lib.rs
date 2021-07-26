@@ -7,15 +7,13 @@
 //!
 //!
 //! ```rust
-//! fn main() {
-//!     match ffprobe::ffprobe("path/to/video.mp4") {
-//!         Ok(info) => {
-//! 	        dbg!(info);
-//!         },
-//! 	    Err(err) => {
-//! 	        eprintln!("Could not analyze file with ffprobe: {:?}", err);
-//! 	    },
-//!     }
+//! match ffprobe::ffprobe("path/to/video.mp4") {
+//!    Ok(info) => {
+//!        dbg!(info);
+//!    },
+//!    Err(err) => {
+//!        eprintln!("Could not analyze file with ffprobe: {:?}", err);
+//!     },
 //! }
 //! ```
 
