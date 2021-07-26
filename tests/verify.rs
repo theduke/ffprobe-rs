@@ -53,6 +53,8 @@ fn download_and_probe() {
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mov-file.mov",
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mpg-file.mpg",
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-wmv-file.wmv",
+        // Audios.
+        "https://file-examples-com.github.io/uploads/2017/11/file_example_WAV_1MG.wav",
     ];
     for url in items {
         check(url);
