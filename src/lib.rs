@@ -31,37 +31,36 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
         ])
         .arg(path)
         .output()
-        .map_err(|err| FfProbeError::new(format!("Could not execute ffprobe: {}", err)))?;
+        .map_err(FfProbeError::Io)?;
 
     if !out.status.success() {
-        let stderr = String::from_utf8_lossy(&out.stderr);
-
-        return Err(FfProbeError::new(format!(
-            "ffprobe exited with status code {}: {}",
-            out.status, stderr
-        )));
+        return Err(FfProbeError::Status(out));
     }
 
-    serde_json::from_slice::<FfProbe>(&out.stdout)
-        .map_err(|err| FfProbeError::new(format!("Could not deserialize ffprobe output: {}", err)))
+    serde_json::from_slice::<FfProbe>(&out.stdout).map_err(FfProbeError::Deserialize)
 }
 
 #[derive(Debug)]
-pub struct FfProbeError {
-    message: String,
-}
-
-impl FfProbeError {
-    fn new(message: impl Into<String>) -> Self {
-        Self {
-            message: message.into(),
-        }
-    }
+pub enum FfProbeError {
+    Io(std::io::Error),
+    Status(std::process::Output),
+    Deserialize(serde_json::Error),
 }
 
 impl std::fmt::Display for FfProbeError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.message)
+        match self {
+            FfProbeError::Io(e) => e.fmt(f),
+            FfProbeError::Status(o) => {
+                write!(
+                    f,
+                    "ffprobe exited with status code {}: {}",
+                    o.status,
+                    String::from_utf8_lossy(&o.stderr)
+                )
+            }
+            FfProbeError::Deserialize(e) => e.fmt(f),
+        }
     }
 }
 
