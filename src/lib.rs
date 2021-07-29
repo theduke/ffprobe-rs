@@ -41,6 +41,7 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
 }
 
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum FfProbeError {
     Io(std::io::Error),
     Status(std::process::Output),
