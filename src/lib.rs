@@ -78,7 +78,7 @@ pub struct FfProbe {
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct Stream {
     pub index: i64,
-    pub codec_name: String,
+    pub codec_name: Option<String>,
     pub sample_aspect_ratio: Option<String>,
     pub display_aspect_ratio: Option<String>,
     pub color_range: Option<String>,
