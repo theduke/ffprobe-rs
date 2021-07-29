@@ -87,7 +87,7 @@ pub struct Stream {
     pub channel_layout: Option<String>,
     pub max_bit_rate: Option<String>,
     pub nb_frames: Option<String>,
-    pub codec_long_name: String,
+    pub codec_long_name: Option<String>,
     pub codec_type: String,
     pub codec_time_base: Option<String>,
     pub codec_tag_string: String,
