@@ -6,6 +6,7 @@
 //! into convenient Rust types.
 //!
 //!
+//!
 //! ```rust
 //! match ffprobe::ffprobe("path/to/video.mp4") {
 //!    Ok(info) => {
@@ -17,27 +18,99 @@
 //! }
 //! ```
 
+/// Execute ffprobe with default settings and return the extracted data.
+///
+/// See [`ffprobe_config`] if you need to customize settings.
 pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
+    ffprobe_config(
+        Config {
+            count_frames: false,
+        },
+        path,
+    )
+}
+
+/// Run ffprobe with a custom config.
+/// See [`ConfigBuilder`] for more details.
+pub fn ffprobe_config(
+    config: Config,
+    path: impl AsRef<std::path::Path>,
+) -> Result<FfProbe, FfProbeError> {
     let path = path.as_ref();
 
-    let out = std::process::Command::new("ffprobe")
-        .args(&[
-            "-v",
-            "quiet",
-            "-show_format",
-            "-show_streams",
-            "-print_format",
-            "json",
-        ])
-        .arg(path)
-        .output()
-        .map_err(FfProbeError::Io)?;
+    let mut cmd = std::process::Command::new("ffprobe");
+
+    // Default args.
+    cmd.args(&[
+        "-v",
+        "quiet",
+        "-show_format",
+        "-show_streams",
+        "-print_format",
+        "json",
+    ]);
+
+    if config.count_frames {
+        cmd.arg("-count_frames");
+    }
+
+    cmd.arg(path);
+
+    let out = cmd.output().map_err(FfProbeError::Io)?;
 
     if !out.status.success() {
         return Err(FfProbeError::Status(out));
     }
 
     serde_json::from_slice::<FfProbe>(&out.stdout).map_err(FfProbeError::Deserialize)
+}
+
+/// ffprobe configuration.
+///
+/// Use [`Config::builder`] for constructing a new config.
+#[derive(Clone, Debug)]
+pub struct Config {
+    count_frames: bool,
+}
+
+impl Config {
+    /// Construct a new ConfigBuilder.
+    pub fn builder() -> ConfigBuilder {
+        ConfigBuilder::new()
+    }
+}
+
+/// Build the ffprobe configuration.
+pub struct ConfigBuilder {
+    config: Config,
+}
+
+impl ConfigBuilder {
+    pub fn new() -> Self {
+        Self {
+            config: Config {
+                count_frames: false,
+            },
+        }
+    }
+
+    /// Enable the -count_frames setting.
+    /// Will fully decode the file and count the frames.
+    /// Frame count will be available in [`Stream::nb_read_frames`].
+    pub fn count_frames(mut self, count_frames: bool) -> Self {
+        self.config.count_frames = count_frames;
+        self
+    }
+
+    /// Finalize the builder into a [`Config`].
+    pub fn build(self) -> Config {
+        self.config
+    }
+
+    /// Run ffprobe with the config produced by this builder.
+    pub fn run(self, path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
+        ffprobe_config(self.config, path)
+    }
 }
 
 #[derive(Debug)]
@@ -87,6 +160,10 @@ pub struct Stream {
     pub channel_layout: Option<String>,
     pub max_bit_rate: Option<String>,
     pub nb_frames: Option<String>,
+    /// Number of frames seen by the decoder.
+    /// Requires full decoding and is only available if the 'count_frames'
+    /// setting was enabled.
+    pub nb_read_frames: Option<String>,
     pub codec_long_name: Option<String>,
     pub codec_type: Option<String>,
     pub codec_time_base: Option<String>,

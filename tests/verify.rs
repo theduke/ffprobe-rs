@@ -1,3 +1,7 @@
+use std::path::Path;
+
+use ffprobe::ConfigBuilder;
+
 fn download(url: &str) -> std::path::PathBuf {
     let dir = std::path::PathBuf::from(".test_output");
     if !dir.is_dir() {
@@ -35,15 +39,27 @@ fn download(url: &str) -> std::path::PathBuf {
     path
 }
 
-fn check(url: &str) {
-    eprintln!("Testing url {}", url);
-    let path = download(url);
+fn check(path: &Path) {
+    eprintln!("Testing file {}", path.display());
     ffprobe::ffprobe(path).unwrap();
+}
+
+fn check_count_frames(path: &Path) {
+    eprintln!("Testing file {}", path.display());
+    let out = ConfigBuilder::new().count_frames(true).run(path).unwrap();
+
+    let stream = out
+        .streams
+        .iter()
+        .find(|s| s.codec_type.clone().unwrap_or_default() == "video")
+        .unwrap();
+
+    assert!(stream.nb_read_frames.is_some());
 }
 
 #[test]
 fn download_and_probe() {
-    let items = vec![
+    let item_urls = vec![
         // Images.
         "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/BigBuckBunny.jpg",
         // Videos.
@@ -54,9 +70,17 @@ fn download_and_probe() {
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mpg-file.mpg",
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-wmv-file.wmv",
         // Audios.
-        "https://file-examples-com.github.io/uploads/2017/11/file_example_WAV_1MG.wav",
+        // TODO: add some audio files
     ];
-    for url in items {
-        check(url);
+
+    let item_paths = item_urls
+        .iter()
+        .map(|url| download(url))
+        .collect::<Vec<_>>();
+
+    for path in &item_paths {
+        check(path);
     }
+
+    check_count_frames(item_paths.last().unwrap());
 }
