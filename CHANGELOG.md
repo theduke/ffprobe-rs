@@ -1,3 +1,11 @@
+
+# 0.3.1 - 2022-04-13
+
+* Add configuration system
+* Add a `count_frames` setting
+  If enabled, the `-count_frames` option will be passed to ffprobe,
+  which will do a full decode and count available frames.
+
 # 0.3.0 - 2021-08-02
 
 * Provided more detailed error information
