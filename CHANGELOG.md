@@ -1,4 +1,10 @@
 
+# 0.3.1 - 2022-04-23
+
+* FIX: don't fail on missing `Format::size` values.
+  Using a default empty string for now.
+  The field will be changed to `Option<_>` in the future.
+
 # 0.3.1 - 2022-04-13
 
 * Add configuration system
