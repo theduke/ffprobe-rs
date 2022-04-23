@@ -245,6 +245,8 @@ pub struct Format {
     pub format_long_name: String,
     pub start_time: Option<String>,
     pub duration: Option<String>,
+    // FIXME: wrap with Option<_> on next semver breaking release.
+    #[serde(default)]
     pub size: String,
     pub bit_rate: Option<String>,
     pub probe_score: i64,
