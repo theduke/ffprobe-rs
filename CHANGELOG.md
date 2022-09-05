@@ -1,3 +1,6 @@
+# UNRELEASED
+
+* Add `Default` impl for `ConfigBuilder`
 
 # 0.3.3 - 2022-09-05
 
