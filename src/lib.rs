@@ -252,15 +252,26 @@ pub struct Format {
     pub probe_score: i64,
     pub tags: Option<FormatTags>,
 }
+
 impl Format {
-    pub fn get_duration(&self) -> Option<Result<std::time::Duration, std::num::ParseFloatError>> {
-        match &self.duration {
-            Some(duration) => Some(match duration.parse::<f64>() {
+    /// Get the duration parsed into a [`std::time::Duration`].
+    pub fn try_get_duration(
+        &self,
+    ) -> Option<Result<std::time::Duration, std::num::ParseFloatError>> {
+        self.duration
+            .as_ref()
+            .map(|duration| match duration.parse::<f64>() {
                 Ok(num) => Ok(std::time::Duration::from_secs_f64(num)),
-                Err(why) => Err(why),
-            }),
-            None => None
-        }
+                Err(error) => Err(error),
+            })
+    }
+
+    /// Get the duration parsed into a [`std::time::Duration`].
+    ///
+    /// Will return [`None`] if no duration is available, or if parsing fails.
+    /// See [`Self::try_get_duration`] for a method that returns an error.
+    pub fn get_duration(&self) -> Option<std::time::Duration> {
+        self.try_get_duration()?.ok()
     }
 }
 
