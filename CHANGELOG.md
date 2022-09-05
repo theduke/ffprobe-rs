@@ -1,5 +1,9 @@
 
-# 0.3.1 - 2022-04-23
+# 0.3.3 - 2022-09-05
+
+* Add `Format::get_duration` + `Format::try_get_duration` accessors
+
+# 0.3.2 - 2022-04-23
 
 * FIX: don't fail on missing `Format::size` values.
   Using a default empty string for now.
