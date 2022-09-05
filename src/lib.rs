@@ -252,6 +252,17 @@ pub struct Format {
     pub probe_score: i64,
     pub tags: Option<FormatTags>,
 }
+impl Format {
+    pub fn get_duration(&self) -> Option<Result<std::time::Duration, std::num::ParseFloatError>> {
+        match &self.duration {
+            Some(duration) => Some(match duration.parse::<f64>() {
+                Ok(num) => Ok(std::time::Duration::from_secs_f64(num)),
+                Err(why) => Err(why),
+            }),
+            None => None
+        }
+    }
+}
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
