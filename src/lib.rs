@@ -304,4 +304,7 @@ pub struct FormatTags {
     pub compatible_brands: Option<String>,
     pub creation_time: Option<String>,
     pub encoder: Option<String>,
+
+    #[serde(flatten)]
+    pub extra: std::collections::HashMap<String, serde_json::Value>
 }
