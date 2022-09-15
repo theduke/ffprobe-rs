@@ -1,6 +1,7 @@
 # UNRELEASED
 
 * Add `Default` impl for `ConfigBuilder`
+* Add exta field to `FormatTags` [#13](https://github.com/theduke/ffprobe-rs/pull/13) by @imLinguin
 
 # 0.3.3 - 2022-09-05
 
