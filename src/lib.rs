@@ -245,6 +245,7 @@ pub struct StreamTags {
     pub creation_time: Option<String>,
     pub handler_name: Option<String>,
     pub encoder: Option<String>,
+    pub timecode: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
