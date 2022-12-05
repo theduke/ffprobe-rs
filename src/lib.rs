@@ -246,6 +246,7 @@ pub struct StreamTags {
     pub handler_name: Option<String>,
     pub encoder: Option<String>,
     pub timecode: Option<String>,
+    pub reel_name: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -307,5 +308,5 @@ pub struct FormatTags {
     pub encoder: Option<String>,
 
     #[serde(flatten)]
-    pub extra: std::collections::HashMap<String, serde_json::Value>
+    pub extra: std::collections::HashMap<String, serde_json::Value>,
 }
