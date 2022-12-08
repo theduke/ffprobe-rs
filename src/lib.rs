@@ -306,6 +306,16 @@ pub struct FormatTags {
     pub compatible_brands: Option<String>,
     pub creation_time: Option<String>,
     pub encoder: Option<String>,
+    pub operational_pattern_ul: Option<String>,
+    pub uid: Option<String>,
+    pub generation_uid: Option<String>,
+    pub company_name: Option<String>,
+    pub product_name: Option<String>,
+    pub product_version: Option<String>,
+    pub product_uid: Option<String>,
+    pub modification_date: Option<String>,
+    pub material_package_umid: Option<String>,
+    pub timecode: Option<String>,
 
     #[serde(flatten)]
     pub extra: std::collections::HashMap<String, serde_json::Value>,
