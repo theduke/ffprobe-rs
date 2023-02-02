@@ -41,7 +41,7 @@ pub fn ffprobe_config(
     let mut cmd = std::process::Command::new("ffprobe");
 
     // Default args.
-    cmd.args(&[
+    cmd.args([
         "-v",
         "quiet",
         "-show_format",
