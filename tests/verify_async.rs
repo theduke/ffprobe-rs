@@ -7,7 +7,11 @@ async fn check_url(url: Url) {
 
 async fn check_count_frames(url: Url) {
     eprintln!("Testing file {}", url);
-    let out = ConfigBuilder::new().count_frames(true).run_async(url).await.unwrap();
+    let out = ConfigBuilder::new()
+        .count_frames(true)
+        .run_async(url)
+        .await
+        .unwrap();
 
     let stream = out
         .streams
@@ -17,8 +21,6 @@ async fn check_count_frames(url: Url) {
 
     assert!(stream.nb_read_frames.is_some());
 }
-
-
 
 #[tokio::test]
 async fn download_and_probe_async() {
@@ -40,7 +42,9 @@ async fn download_and_probe_async() {
         for url in item_urls.iter() {
             check_url(Url::parse(url).unwrap()).await;
         }
-    }).await.expect("tokio spawn failed");
+    })
+    .await
+    .expect("tokio spawn failed");
 
     check_count_frames(Url::parse(*item_urls.last().unwrap()).unwrap()).await;
 }

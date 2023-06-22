@@ -82,7 +82,7 @@ pub async fn ffprobe_async(path: impl AsRef<std::path::Path>) -> Result<FfProbe,
 }
 
 /// Execute ffprobe with default settings and return the extracted data in async and taking a url as input.
-/// 
+///
 pub async fn ffprobe_async_url(url: Url) -> Result<FfProbe, FfProbeError> {
     ffprobe_async_config_url(
         Config {
@@ -122,12 +122,7 @@ pub async fn ffprobe_async_config_url(config: Config, url: Url) -> Result<FfProb
 
     let mut cmd = TokioCommand::new("ffprobe");
 
-    let out = cmd
-        .args(args)
-        .output()
-        .await
-        .map_err(FfProbeError::Io)?;
-
+    let out = cmd.args(args).output().await.map_err(FfProbeError::Io)?;
 
     if !out.status.success() {
         return Err(FfProbeError::Status(out));
