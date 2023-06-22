@@ -17,6 +17,12 @@
 //!     },
 //! }
 //! ```
+#[cfg(feature = "async-tokio")]
+use {
+    std::{iter, path::Path},
+    tokio::process::Command as TokioCommand,
+    url::Url,
+};
 
 /// Execute ffprobe with default settings and return the extracted data.
 ///
@@ -58,6 +64,75 @@ pub fn ffprobe_config(
     cmd.arg(path);
 
     let out = cmd.output().map_err(FfProbeError::Io)?;
+
+    if !out.status.success() {
+        return Err(FfProbeError::Status(out));
+    }
+
+    serde_json::from_slice::<FfProbe>(&out.stdout).map_err(FfProbeError::Deserialize)
+}
+
+/// Execute ffprobe with default settings and return the extracted data in async.
+///
+/// See [`ffprobe_config`] if you need to customize settings.
+#[cfg(feature = "async-tokio")]
+pub async fn ffprobe_async(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
+    ffprobe_async_config(
+        Config {
+            count_frames: false,
+            ffprobe_bin: "ffprobe".into(),
+        },
+        path,
+    )
+    .await
+}
+
+/// Execute ffprobe with default settings and return the extracted data in async and taking a url as input.
+///
+#[cfg(feature = "async-tokio")]
+pub async fn ffprobe_async_url(url: Url) -> Result<FfProbe, FfProbeError> {
+    ffprobe_async_config_url(
+        Config {
+            count_frames: false,
+            ffprobe_bin: "ffprobe".into(),
+        },
+        url,
+    )
+    .await
+}
+
+/// Run ffprobe with a custom config in async
+/// See [`ConfigBuilder`] for more details.
+#[cfg(feature = "async-tokio")]
+pub async fn ffprobe_async_config(
+    config: Config,
+    path: impl AsRef<Path>,
+) -> Result<FfProbe, FfProbeError> {
+    let url = Url::from_file_path(path).unwrap();
+    ffprobe_async_config_url(config, url).await
+}
+
+/// Run ffprobe with a custom config in async taking a url
+/// See [`ConfigBuilder`] for more details.
+#[cfg(feature = "async-tokio")]
+pub async fn ffprobe_async_config_url(config: Config, url: Url) -> Result<FfProbe, FfProbeError> {
+    let url = url.as_ref();
+    let mut args = vec![
+        "-v",
+        "quiet",
+        "-show_format",
+        "-show_streams",
+        "-print_format",
+        "json",
+    ];
+    if config.count_frames {
+        args.extend(iter::once("-count_frames"));
+    }
+    args.extend(iter::once(url));
+
+    let mut cmd = TokioCommand::new("ffprobe");
+
+    let out = cmd.args(args).output().await.map_err(FfProbeError::Io)?;
 
     if !out.status.success() {
         return Err(FfProbeError::Status(out));
@@ -120,6 +195,12 @@ impl ConfigBuilder {
     /// Run ffprobe with the config produced by this builder.
     pub fn run(self, path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
         ffprobe_config(self.config, path)
+    }
+
+    /// Run ffprobe with the config produced by this builder.
+    #[cfg(feature = "async-tokio")]
+    pub async fn run_async(self, url: Url) -> Result<FfProbe, FfProbeError> {
+        ffprobe_async_config_url(self.config, url).await
     }
 }
 
