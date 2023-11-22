@@ -25,6 +25,7 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
     ffprobe_config(
         Config {
             count_frames: false,
+            ffprobe_bin: "ffprobe".into(),
         },
         path,
     )
@@ -38,7 +39,7 @@ pub fn ffprobe_config(
 ) -> Result<FfProbe, FfProbeError> {
     let path = path.as_ref();
 
-    let mut cmd = std::process::Command::new("ffprobe");
+    let mut cmd = std::process::Command::new(config.ffprobe_bin);
 
     // Default args.
     cmd.args([
@@ -71,6 +72,7 @@ pub fn ffprobe_config(
 #[derive(Clone, Debug)]
 pub struct Config {
     count_frames: bool,
+    ffprobe_bin: std::path::PathBuf,
 }
 
 impl Config {
@@ -90,6 +92,7 @@ impl ConfigBuilder {
         Self {
             config: Config {
                 count_frames: false,
+                ffprobe_bin: "ffprobe".into(),
             },
         }
     }
@@ -99,6 +102,13 @@ impl ConfigBuilder {
     /// Frame count will be available in [`Stream::nb_read_frames`].
     pub fn count_frames(mut self, count_frames: bool) -> Self {
         self.config.count_frames = count_frames;
+        self
+    }
+
+    /// Specify which binary name (e.g. `"ffprobe-6"`) or path (e.g. `"/opt/bin/ffprobe"`) to use
+    /// for executing `ffprobe`.
+    pub fn ffprobe_bin(mut self, ffprobe_bin: impl AsRef<std::path::Path>) -> Self {
+        self.config.ffprobe_bin = ffprobe_bin.as_ref().to_path_buf();
         self
     }
 
