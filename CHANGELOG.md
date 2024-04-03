@@ -1,5 +1,7 @@
-# UNRELEASED
+# 0.4.0 - 2024-04-03
 
+* Allow customizing the ffprobe binary path
+[#22](https://github.com/theduke/ffprobe-rs/pull/22) by @lovesegfault
 * Add StreamTags::{reel_name/timecode} fields
 * Add `Default` impl for `ConfigBuilder`
 * Add `extra` field to `FormatTags` [#13](https://github.com/theduke/ffprobe-rs/pull/13) by @imLinguin
