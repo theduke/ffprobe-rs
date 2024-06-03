@@ -1,3 +1,5 @@
+use crate::streams::{option_string_to_int, string_to_int};
+
 #[derive(Default, Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 /// Parsed Format
 pub struct Format {
@@ -13,14 +15,18 @@ pub struct Format {
     pub format_name: String,
     /// eg. Matroska / WebM
     pub format_long_name: String,
+    // TODO: parse
     pub start_time: Option<String>,
     /// Length in seconds
+    // TODO: parse
     pub duration: Option<String>,
     // FIXME: wrap with Option<_> on next semver breaking release.
     #[serde(default)]
     /// Size in bytes
-    pub size: String,
-    pub bit_rate: Option<String>,
+    #[serde(deserialize_with = "string_to_int")]
+    pub size: i64,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bit_rate: Option<i64>,
     ///value from 0-100
     pub probe_score: u64,
     /// File Metadata

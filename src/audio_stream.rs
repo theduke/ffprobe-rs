@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::streams::StreamTags;
+use crate::streams::{option_string_to_int, StreamTags};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 /// Tags specific for audio
@@ -43,13 +43,16 @@ pub struct AudioStream {
     /// s32: Signed 32-bit integer
     /// flt: Floating point
     /// dbl: Double precision floating point
+    /// todo: enum
     pub sample_fmt: String,
     /// The sample rate of the audio stream.
     /// eg. 44100 Hz
+    /// todo: parse
     pub sample_rate: String,
     /// Bit rate of the video stream.
     /// The bit_rate represents the number of bits that are processed per unit of time in the video stream. It is a measure of the video stream's data rate, indicating how much data is encoded for each second of video.
-    pub bit_rate: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bit_rate: Option<i64>,
     /// Long name of the codec used for the video stream.
     pub codec_long_name: String,
     /// Short name of the codec used for the video stream.
@@ -58,9 +61,11 @@ pub struct AudioStream {
     /// Duration of the video stream in timestamp units.
     pub duration_ts: Option<u64>,
     /// Profile of the codec used for the video stream (e.g., Main, High).
+    // todo: enum
     pub profile: Option<String>,
     ///  This specifies the number of bits used to represent each component of the pixel. For example, in an 8-bit raw sample, each color component (e.g., red, green, and blue in an RGB format) is represented by 8 bits, allowing 256 different levels per component.
-    pub bits_per_raw_sample: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bits_per_raw_sample: Option<i64>,
     /// Metadata tags associated with the video stream.
     pub tags: Option<AudioTags>,
     #[cfg(feature = "__internal_deny_unknown_fields")]

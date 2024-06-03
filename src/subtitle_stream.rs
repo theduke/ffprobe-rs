@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::streams::StreamTags;
+use crate::streams::{option_string_to_int, StreamTags};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 /// Tags specific for subtitles
@@ -26,7 +26,8 @@ pub struct SubtititleTags {
 pub struct SubtitleStream {
     /// Bit rate of the video stream.
     /// The bit_rate represents the number of bits that are processed per unit of time in the video stream. It is a measure of the video stream's data rate, indicating how much data is encoded for each second of video.
-    pub bit_rate: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bit_rate: Option<i64>,
     /// width of video
     pub width: Option<i64>,
     /// height of video

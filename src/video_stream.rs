@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use crate::streams::{option_string_to_bool, option_string_to_int};
 use serde::{Deserialize, Serialize};
 
 use crate::{ratio::Ratio, streams::StreamTags};
@@ -35,9 +36,11 @@ pub struct VideoStream {
     /// ratio of the width to the height of the video as it is intended to be viewed. This aspect ratio dictates the shape of the displayed image on the screen.
     pub display_aspect_ratio: Option<Ratio>,
     ///  This specifies the number of bits used to represent each component of the pixel. For example, in an 8-bit raw sample, each color component (e.g., red, green, and blue in an RGB format) is represented by 8 bits, allowing 256 different levels per component.
-    pub bits_per_raw_sample: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bits_per_raw_sample: Option<i64>,
     /// Location of chroma samples in the video (e.g., left, center).
     /// Chroma samples refer to the color information in a video image. In video and image processing, the image is typically represented in a color space where the luminance (brightness) and chrominance (color) are separated. The chrominance components (chroma) are often sub-sampled to reduce the amount of data that needs to be processed and stored.
+    /// TODO: enum
     pub chroma_location: Option<String>,
     /// Indicates the presence of closed captions in the video. (0/1)
     /// Closed captioning (CC) and subtitling are both processes of displaying text on a television, video screen, or other visual display to provide additional or interpretive information. Both are typically used as a transcription of the audio portion of a program as it occurs (either verbatim or in edited form), sometimes including descriptions of non-speech elements
@@ -49,7 +52,8 @@ pub struct VideoStream {
     pub codec_name: String,
     /// Indicates the color primaries used in the video (e.g., BT.709).
     pub color_primaries: Option<String>,
-    // Indicates the color range used in the video (e.g., full, limited).
+    /// Indicates the color range used in the video (e.g., full, limited).
+    // TODO: enum
     pub color_range: Option<String>,
     /// Indicates the color space used in the video (e.g., YUV, RGB).
     pub color_space: Option<String>,
@@ -63,6 +67,7 @@ pub struct VideoStream {
     /// - `Bottom field first`: The first field contains the bottommost lines (even lines), followed by the second field with the odd lines.
     /// - `Progressive`: The video is not interlaced; each frame is displayed as a whole.
     /// - `Unknown`: The field order is not specified.
+    // TODO: enum
     pub field_order: Option<String>,
     /// Indicates the presence of film grain in the video.
     pub film_grain: i64,
@@ -74,15 +79,18 @@ pub struct VideoStream {
     pub has_b_frames: i64,
     /// Indicates whether the video stream is in AVC format.
     /// Advanced Video Coding (AVC), also referred to as H.264 or MPEG-4 Part 10, is a video compression standard based on block-oriented, motion-compensated coding.[2] It is by far the most commonly used format for the recording, compression, and distribution of video content, used by 91% of video industry developers as of September 2019.[3][4] It supports a maximum resolution of 8K UHD.[5][6]
+    // TODO: parse
     pub is_avc: Option<String>,
     /// Level of the codec profile used for the video stream.
     /// TODO: explain
     pub level: i64,
     /// Size of the NAL (Network Abstraction Layer) units in the video stream.
+    // TODO: parse
     pub nal_length_size: Option<String>,
     /// Pixel format used in the video stream (e.g., yuv420p).
     pub pix_fmt: Option<String>,
     /// Profile of the codec used for the video stream (e.g., Main, High).
+    /// TODO: enum
     pub profile: Option<String>,
     /// Duration of the video stream in timestamp units.
     pub duration_ts: Option<u64>,
@@ -93,13 +101,16 @@ pub struct VideoStream {
     pub tags: Option<VideoTags>,
     /// Bit rate of the video stream.
     /// The bit_rate represents the number of bits that are processed per unit of time in the video stream. It is a measure of the video stream's data rate, indicating how much data is encoded for each second of video.
-    pub bit_rate: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bit_rate: Option<i64>,
     /// boolean
     /// divx_packed is a codec-specific property related to the DivX codec. DivX is a popular video codec used for compressing and decompressing digital video. The divx_packed property likely indicates whether the video stream is packed in a particular way specific to the DivX codec.
-    divx_packed: Option<String>,
+    #[serde(deserialize_with = "option_string_to_bool", default)]
+    divx_packed: Option<bool>,
     /// boolean
     /// the quarter_sample option is used to analyze only one out of every four frames of a video when gathering information about it. This option can be handy when you want to speed up the analysis process or when you're not interested in examining every single frame in detail. By analyzing a quarter of the frames, you can get a general overview of the video's properties without processing unnecessary data.
-    quarter_sample: Option<String>,
+    #[serde(deserialize_with = "option_string_to_bool", default)]
+    quarter_sample: Option<bool>,
     #[cfg(feature = "__internal_deny_unknown_fields")]
     codec_type: Option<serde_json::Value>,
     #[cfg(feature = "__internal_deny_unknown_fields")]

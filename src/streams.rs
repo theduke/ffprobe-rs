@@ -22,13 +22,14 @@ pub struct Stream {
     pub avg_frame_rate: Ratio,
     /// The codec_tag field represents a numeric identifier associated with the codec used in the stream. It is often an integer value assigned to a specific codec format, allowing programs to quickly identify the codec type without needing to parse through codec-specific headers extensively. These tags are usually defined by standards organizations or codec developers.
     /// For example, in the context of video codecs, a codec tag might represent the codec used for encoding the video stream, such as H.264 (codec tag 0x21) or MPEG-4 Visual (codec tag 0x20).
+    // todo: parse
     pub codec_tag: String,
     #[cfg(any(
         feature = "codec_tag_string",
         feature = "__internal_deny_unknown_fields"
     ))]
     /// human readable codec_tag
-    //TODO: replace with function
+    //TODO: generate
     pub codec_tag_string: String,
     /// The time base of the stream. eg. 1/1000
     pub time_base: Ratio,
@@ -43,10 +44,12 @@ pub struct Stream {
     /// The real frame rate of the stream.
     pub r_frame_rate: Ratio,
     /// The total number of frames in the stream, if available.
+    // todo: parse
     pub nb_frames: Option<String>,
     /// Number of frames seen by the decoder.
     /// Requires full decoding and is only available if the 'count_frames'
     /// setting was enabled.
+    // todo: parse
     pub nb_read_frames: Option<String>,
     #[serde(flatten)]
     pub stream: StreamKinds,
@@ -223,4 +226,37 @@ pub struct StreamTags {
     pub vendor_id: Option<String>,
     pub title: Option<String>,
     pub language: Option<String>,
+}
+
+pub fn option_string_to_int<'de, D>(deserializer: D) -> Result<Option<i64>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => s.parse::<i64>().map(Some).map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
+}
+
+pub fn string_to_int<'de, D>(deserializer: D) -> Result<i64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s = String::deserialize(deserializer)?;
+    s.parse::<i64>().map_err(serde::de::Error::custom)
+}
+
+pub fn option_string_to_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => s
+            .parse::<bool>()
+            .map(Some)
+            .map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
 }
