@@ -28,6 +28,7 @@
 
 use std::path::Path;
 use std::process::Command;
+use std::time::Duration;
 
 use error::FfProbeError;
 #[cfg(feature = "streams")]
@@ -78,6 +79,8 @@ pub use format::Format;
 #[cfg(feature = "format")]
 pub use format::FormatTags;
 pub use ratio::Ratio;
+use serde::Deserialize;
+use serde::Deserializer;
 #[cfg(feature = "streams")]
 pub use streams::SideData;
 #[cfg(feature = "streams")]
@@ -163,4 +166,19 @@ pub async fn ffprobe_async_config(
     }
 
     serde_json::from_slice::<FfProbe>(&out.stdout).map_err(FfProbeError::Deserialize)
+}
+
+pub fn option_string_to_duration<'de, D>(deserializer: D) -> Result<Option<Duration>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => s
+            .parse::<f64>()
+            .map(Duration::from_secs_f64)
+            .map(Some)
+            .map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
 }

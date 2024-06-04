@@ -85,8 +85,8 @@ pub struct VideoStream {
     /// TODO: explain
     pub level: i64,
     /// Size of the NAL (Network Abstraction Layer) units in the video stream.
-    // TODO: parse
-    pub nal_length_size: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub nal_length_size: Option<i64>,
     /// Pixel format used in the video stream (e.g., yuv420p).
     pub pix_fmt: Option<String>,
     /// Profile of the codec used for the video stream (e.g., Main, High).

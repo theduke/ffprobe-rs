@@ -1,4 +1,9 @@
-use crate::streams::{option_string_to_int, string_to_int};
+use std::time::Duration;
+
+use crate::{
+    option_string_to_duration,
+    streams::{option_string_to_int, string_to_int},
+};
 
 #[derive(Default, Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
 /// Parsed Format
@@ -15,11 +20,11 @@ pub struct Format {
     pub format_name: String,
     /// eg. Matroska / WebM
     pub format_long_name: String,
-    // TODO: parse
-    pub start_time: Option<String>,
+    #[serde(deserialize_with = "option_string_to_duration", default)]
+    pub start_time: Option<Duration>,
     /// Length in seconds
-    // TODO: parse
-    pub duration: Option<String>,
+    #[serde(deserialize_with = "option_string_to_duration", default)]
+    pub duration: Option<Duration>,
     // FIXME: wrap with Option<_> on next semver breaking release.
     #[serde(default)]
     /// Size in bytes
@@ -31,28 +36,6 @@ pub struct Format {
     pub probe_score: u64,
     /// File Metadata
     pub tags: Option<FormatTags>,
-}
-
-impl Format {
-    /// Get the duration parsed into a [`std::time::Duration`].
-    pub fn try_get_duration(
-        &self,
-    ) -> Option<Result<std::time::Duration, std::num::ParseFloatError>> {
-        self.duration
-            .as_ref()
-            .map(|duration| match duration.parse::<f64>() {
-                Ok(num) => Ok(std::time::Duration::from_secs_f64(num)),
-                Err(error) => Err(error),
-            })
-    }
-
-    /// Get the duration parsed into a [`std::time::Duration`].
-    ///
-    /// Will return [`None`] if no duration is available, or if parsing fails.
-    /// See [`Self::try_get_duration`] for a method that returns an error.
-    pub fn get_duration(&self) -> Option<std::time::Duration> {
-        self.try_get_duration()?.ok()
-    }
 }
 
 #[derive(Default, Debug, Clone, Eq, PartialEq, serde::Serialize, serde::Deserialize)]

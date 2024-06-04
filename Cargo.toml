@@ -19,6 +19,5 @@ format = []
 chapters = []
 
 async = ["dep:tokio"]
-codec_tag_string = []
 
 __internal_deny_unknown_fields = []

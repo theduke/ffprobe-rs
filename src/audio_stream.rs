@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
-use crate::streams::{option_string_to_int, StreamTags};
+use crate::streams::{option_string_to_int, string_to_int, StreamTags};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 /// Tags specific for audio
@@ -10,11 +10,14 @@ pub struct AudioTags {
     #[serde(flatten)]
     pub tags: StreamTags,
     #[serde(rename = "ENCODER_OPTIONS")]
+    //TODO: check if parse
     pub encoder_options: Option<String>,
     #[serde(rename = "SOURCE_ID")]
+    //TODO: check if parse
     pub source_id: Option<String>,
     #[serde(rename = "COMMENT")]
     pub comment: Option<String>,
+    //TODO: check if parse
     pub track: Option<String>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
@@ -47,8 +50,8 @@ pub struct AudioStream {
     pub sample_fmt: String,
     /// The sample rate of the audio stream.
     /// eg. 44100 Hz
-    /// todo: parse
-    pub sample_rate: String,
+    #[serde(deserialize_with = "string_to_int")]
+    pub sample_rate: i64,
     /// Bit rate of the video stream.
     /// The bit_rate represents the number of bits that are processed per unit of time in the video stream. It is a measure of the video stream's data rate, indicating how much data is encoded for each second of video.
     #[serde(deserialize_with = "option_string_to_int", default)]

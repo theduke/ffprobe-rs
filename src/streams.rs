@@ -22,15 +22,8 @@ pub struct Stream {
     pub avg_frame_rate: Ratio,
     /// The codec_tag field represents a numeric identifier associated with the codec used in the stream. It is often an integer value assigned to a specific codec format, allowing programs to quickly identify the codec type without needing to parse through codec-specific headers extensively. These tags are usually defined by standards organizations or codec developers.
     /// For example, in the context of video codecs, a codec tag might represent the codec used for encoding the video stream, such as H.264 (codec tag 0x21) or MPEG-4 Visual (codec tag 0x20).
-    // todo: parse
-    pub codec_tag: String,
-    #[cfg(any(
-        feature = "codec_tag_string",
-        feature = "__internal_deny_unknown_fields"
-    ))]
-    /// human readable codec_tag
-    //TODO: generate
-    pub codec_tag_string: String,
+    #[serde(deserialize_with = "string_to_bytes")]
+    pub codec_tag: Vec<u8>,
     /// The time base of the stream. eg. 1/1000
     pub time_base: Ratio,
     /// The start presentation timestamp (PTS) of the stream.
@@ -44,13 +37,15 @@ pub struct Stream {
     /// The real frame rate of the stream.
     pub r_frame_rate: Ratio,
     /// The total number of frames in the stream, if available.
-    // todo: parse
-    pub nb_frames: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub nb_frames: Option<i64>,
     /// Number of frames seen by the decoder.
     /// Requires full decoding and is only available if the 'count_frames'
     /// setting was enabled.
-    // todo: parse
-    pub nb_read_frames: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub nb_read_frames: Option<i64>,
+    #[cfg(feature = "__internal_deny_unknown_fields")]
+    codec_tag_string: Value,
     #[serde(flatten)]
     pub stream: StreamKinds,
 }
@@ -204,25 +199,34 @@ pub struct SideData {
 /// Stream tags for video, audio, subtitle
 pub struct StreamTags {
     #[serde(rename = "BPS")]
+    //TODO: check if parse
     pub bps: Option<String>,
     #[serde(rename = "DURATION")]
+    //TODO: parse
     pub duration: Option<String>,
     #[serde(rename = "NUMBER_OF_BYTES")]
+    //TODO: parse
     pub number_of_bytes: Option<String>,
     #[serde(rename = "NUMBER_OF_FRAMES")]
+    //TODO: parse
     pub number_of_frames: Option<String>,
     #[serde(rename = "_STATISTICS_TAGS")]
+    //TODO: parse
     pub statistics_tags: Option<String>,
     #[serde(rename = "_STATISTICS_WRITING_APP")]
+    //TODO: parse
     pub statistics_writing_app: Option<String>,
     #[serde(rename = "_STATISTICS_WRITING_DATE_UTC")]
+    //TODO: parse
     pub statistics_writing_date_utc: Option<String>,
     #[serde(alias = "HANDLER_NAME")]
     pub handler_name: Option<String>,
+    //TODO: parse
     pub creation_time: Option<String>,
     #[serde(alias = "ENCODER")]
     pub encoder: Option<String>,
     #[serde(alias = "VENDOR_ID")]
+    //TODO: check if parse
     pub vendor_id: Option<String>,
     pub title: Option<String>,
     pub language: Option<String>,
@@ -245,6 +249,35 @@ where
 {
     let s = String::deserialize(deserializer)?;
     s.parse::<i64>().map_err(serde::de::Error::custom)
+}
+
+pub fn string_to_bytes<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let hex_str = String::deserialize(deserializer)?;
+    let trimmed_str = if hex_str.starts_with("0x") {
+        &hex_str[2..]
+    } else {
+        &hex_str
+    };
+
+    if trimmed_str.len() % 2 != 0 {
+        return Err(serde::de::Error::custom(
+            "Hex string must have an even number of digits",
+        ));
+    }
+
+    trimmed_str
+        .as_bytes()
+        .chunks(2)
+        .map(|chunk| {
+            let hex_digit = std::str::from_utf8(chunk).map_err(|_| "Invalid UTF-8 sequence")?;
+
+            u8::from_str_radix(hex_digit, 16).map_err(|_| "Conversion error")
+        })
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(serde::de::Error::custom)
 }
 
 pub fn option_string_to_bool<'de, D>(deserializer: D) -> Result<Option<bool>, D::Error>
