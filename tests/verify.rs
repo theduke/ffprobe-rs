@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use ffprobe::ConfigBuilder;
+use ffprobe::{Config, StreamKinds};
 
 fn download(url: &str) -> std::path::PathBuf {
     let dir = std::path::PathBuf::from(".test_output");
@@ -46,12 +46,12 @@ fn check(path: &Path) {
 
 fn check_count_frames(path: &Path) {
     eprintln!("Testing file {}", path.display());
-    let out = ConfigBuilder::new().count_frames(true).run(path).unwrap();
+    let out = Config::new().count_frames(true).run(path).unwrap();
 
     let stream = out
         .streams
         .iter()
-        .find(|s| s.codec_type.clone().unwrap_or_default() == "video")
+        .find(|s| matches!(s.stream, StreamKinds::Video(_)))
         .unwrap();
 
     assert!(stream.nb_read_frames.is_some());
