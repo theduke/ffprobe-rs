@@ -10,15 +10,13 @@ pub struct AudioTags {
     #[serde(flatten)]
     pub tags: StreamTags,
     #[serde(rename = "ENCODER_OPTIONS")]
-    //TODO: check if parse
     pub encoder_options: Option<String>,
     #[serde(rename = "SOURCE_ID")]
-    //TODO: check if parse
     pub source_id: Option<String>,
     #[serde(rename = "COMMENT")]
     pub comment: Option<String>,
-    //TODO: check if parse
-    pub track: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub track: Option<i64>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }

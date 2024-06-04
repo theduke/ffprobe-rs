@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use chrono::{DateTime, FixedOffset, NaiveDateTime, NaiveTime, Timelike};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use serde_json::Value;
 
@@ -199,34 +200,31 @@ pub struct SideData {
 /// Stream tags for video, audio, subtitle
 pub struct StreamTags {
     #[serde(rename = "BPS")]
-    //TODO: check if parse
-    pub bps: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub bps: Option<i64>,
     #[serde(rename = "DURATION")]
-    //TODO: parse
-    pub duration: Option<String>,
+    #[serde(deserialize_with = "option_chronostring_to_duration", default)]
+    pub duration: Option<Duration>,
     #[serde(rename = "NUMBER_OF_BYTES")]
-    //TODO: parse
-    pub number_of_bytes: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub number_of_bytes: Option<i64>,
     #[serde(rename = "NUMBER_OF_FRAMES")]
-    //TODO: parse
-    pub number_of_frames: Option<String>,
+    #[serde(deserialize_with = "option_string_to_int", default)]
+    pub number_of_frames: Option<i64>,
     #[serde(rename = "_STATISTICS_TAGS")]
-    //TODO: parse
     pub statistics_tags: Option<String>,
     #[serde(rename = "_STATISTICS_WRITING_APP")]
-    //TODO: parse
     pub statistics_writing_app: Option<String>,
     #[serde(rename = "_STATISTICS_WRITING_DATE_UTC")]
-    //TODO: parse
-    pub statistics_writing_date_utc: Option<String>,
+    #[serde(deserialize_with = "option_string_to_naivedatetime", default)]
+    pub statistics_writing_date_utc: Option<NaiveDateTime>,
     #[serde(alias = "HANDLER_NAME")]
     pub handler_name: Option<String>,
-    //TODO: parse
-    pub creation_time: Option<String>,
+    #[serde(deserialize_with = "option_string_to_datetime", default)]
+    pub creation_time: Option<DateTime<FixedOffset>>,
     #[serde(alias = "ENCODER")]
     pub encoder: Option<String>,
     #[serde(alias = "VENDOR_ID")]
-    //TODO: check if parse
     pub vendor_id: Option<String>,
     pub title: Option<String>,
     pub language: Option<String>,
@@ -256,8 +254,9 @@ where
     D: Deserializer<'de>,
 {
     let hex_str = String::deserialize(deserializer)?;
-    let trimmed_str = if hex_str.starts_with("0x") {
-        &hex_str[2..]
+
+    let trimmed_str = if let Some(stripped) = hex_str.strip_prefix("0x") {
+        stripped
     } else {
         &hex_str
     };
@@ -288,6 +287,55 @@ where
     match s {
         Some(s) => s
             .parse::<bool>()
+            .map(Some)
+            .map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
+}
+
+pub fn option_chronostring_to_duration<'de, D>(
+    deserializer: D,
+) -> Result<Option<Duration>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => NaiveTime::parse_from_str(&s, "%H:%M:%S%.f")
+            .map(|time| {
+                let seconds = time.hour() * 3600 + time.minute() * 60 + time.second();
+                Duration::new(seconds as u64, time.nanosecond())
+            })
+            .map(Some)
+            .map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
+}
+
+pub fn option_string_to_naivedatetime<'de, D>(
+    deserializer: D,
+) -> Result<Option<NaiveDateTime>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => NaiveDateTime::parse_from_str(&s, "%Y-%m-%d %H:%M:%S")
+            .map(Some)
+            .map_err(serde::de::Error::custom),
+        None => Ok(None),
+    }
+}
+
+pub fn option_string_to_datetime<'de, D>(
+    deserializer: D,
+) -> Result<Option<DateTime<FixedOffset>>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let s: Option<String> = Option::deserialize(deserializer)?;
+    match s {
+        Some(s) => DateTime::parse_from_rfc3339(&s)
             .map(Some)
             .map_err(serde::de::Error::custom),
         None => Ok(None),

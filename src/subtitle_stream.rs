@@ -17,7 +17,6 @@ pub struct SubtititleTags {
     #[serde(deserialize_with = "option_string_to_int", default)]
     pub bit_rate: Option<i64>,
     #[serde(rename = "SOURCE_ID")]
-    //TODO: check if parse
     pub source_id: Option<String>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,

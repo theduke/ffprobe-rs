@@ -18,6 +18,10 @@ pub struct Chapter {
     pub end: i64,
     /// This holds additional metadata tags associated with the chapter, such as its title.
     pub tags: ChapterTags,
+    #[cfg(feature = "__internal_deny_unknown_fields")]
+    start_time: Option<serde_json::Value>,
+    #[cfg(feature = "__internal_deny_unknown_fields")]
+    end_time: Option<serde_json::Value>,
 }
 
 impl Chapter {

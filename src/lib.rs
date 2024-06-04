@@ -176,6 +176,7 @@ where
     match s {
         Some(s) => s
             .parse::<f64>()
+            .map(|v| v.max(0.0))
             .map(Duration::from_secs_f64)
             .map(Some)
             .map_err(serde::de::Error::custom),

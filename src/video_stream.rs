@@ -79,8 +79,8 @@ pub struct VideoStream {
     pub has_b_frames: i64,
     /// Indicates whether the video stream is in AVC format.
     /// Advanced Video Coding (AVC), also referred to as H.264 or MPEG-4 Part 10, is a video compression standard based on block-oriented, motion-compensated coding.[2] It is by far the most commonly used format for the recording, compression, and distribution of video content, used by 91% of video industry developers as of September 2019.[3][4] It supports a maximum resolution of 8K UHD.[5][6]
-    // TODO: parse
-    pub is_avc: Option<String>,
+    #[serde(deserialize_with = "option_string_to_bool", default)]
+    pub is_avc: Option<bool>,
     /// Level of the codec profile used for the video stream.
     /// TODO: explain
     pub level: i64,
