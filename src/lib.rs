@@ -225,6 +225,7 @@ pub struct Stream {
 #[allow(clippy::derive_partial_eq_without_eq)]
 pub struct SideData {
     pub side_data_type: String,
+    pub rotation: Option<i16>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
