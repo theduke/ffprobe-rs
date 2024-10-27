@@ -1,5 +1,5 @@
 [package]
-name = "ffprobe"
+name = "easy-ffprobe"
 description = "Typed wrapper for the ffprobe CLI"
 version = "0.5.0"
 authors = ["Christoph Herzog <chris@theduke.at>"]
@@ -10,8 +10,8 @@ license = "MIT"
 [dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-tokio = {version = "1.38", features = ["process"], optional = true }
-chrono = {version = "0.4", features = ["serde"]}
+tokio = { version = "1.40", features = ["process"], optional = true }
+chrono = { version = "0.4", features = ["serde"] }
 
 [features]
 default = ["chapters", "format", "streams"]
