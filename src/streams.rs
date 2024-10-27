@@ -184,16 +184,17 @@ impl<'de> Deserialize<'de> for StreamKinds {
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
 pub struct SideData {
-    side_data_type: Option<String>,
-    service_type: Option<i64>,
-    dv_version_major: Option<i64>,
-    dv_version_minor: Option<i64>,
-    dv_profile: Option<i64>,
-    dv_level: Option<i64>,
-    rpu_present_flag: Option<i64>,
-    el_present_flag: Option<i64>,
-    bl_present_flag: Option<i64>,
-    dv_bl_signal_compatibility_id: Option<i64>,
+    pub side_data_type: Option<String>,
+    pub service_type: Option<i64>,
+    pub dv_version_major: Option<i64>,
+    pub dv_version_minor: Option<i64>,
+    pub dv_profile: Option<i64>,
+    pub dv_level: Option<i64>,
+    pub rpu_present_flag: Option<i64>,
+    pub el_present_flag: Option<i64>,
+    pub bl_present_flag: Option<i64>,
+    pub dv_bl_signal_compatibility_id: Option<i64>,
+    pub rotation: Option<i16>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
