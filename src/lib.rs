@@ -273,6 +273,7 @@ pub struct Format {
     pub nb_streams: i64,
     pub nb_programs: i64,
     pub format_name: String,
+    #[serde(default)]
     pub format_long_name: String,
     pub start_time: Option<String>,
     pub duration: Option<String>,
