@@ -18,6 +18,9 @@
 //! }
 //! ```
 
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+
 /// Execute ffprobe with default settings and return the extracted data.
 ///
 /// See [`ffprobe_config`] if you need to customize settings.
@@ -56,6 +59,10 @@ pub fn ffprobe_config(
     }
 
     cmd.arg(path);
+
+    // Prevent CMD popup on Windows.
+    #[cfg(target_os = "windows")]
+    cmd.creation_flags(0x08000000);
 
     let out = cmd.output().map_err(FfProbeError::Io)?;
 
@@ -266,7 +273,6 @@ pub struct Format {
     pub nb_streams: i64,
     pub nb_programs: i64,
     pub format_name: String,
-    #[serde(default)]
     pub format_long_name: String,
     pub start_time: Option<String>,
     pub duration: Option<String>,
