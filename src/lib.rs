@@ -93,6 +93,11 @@ impl Config {
 pub struct ConfigBuilder {
     config: Config,
 }
+impl Default for ConfigBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl ConfigBuilder {
     pub fn new() -> Self {
@@ -127,12 +132,6 @@ impl ConfigBuilder {
     /// Run ffprobe with the config produced by this builder.
     pub fn run(self, path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeError> {
         ffprobe_config(self.config, path)
-    }
-}
-
-impl Default for ConfigBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -228,8 +227,6 @@ pub struct Stream {
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
-// Allowed to prevent having to break compatibility of float fields are added.
-#[allow(clippy::derive_partial_eq_without_eq)]
 pub struct SideData {
     pub side_data_type: String,
     pub rotation: Option<i16>,
@@ -237,8 +234,6 @@ pub struct SideData {
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
-// Allowed to prevent having to break compatibility of float fields are added.
-#[allow(clippy::derive_partial_eq_without_eq)]
 pub struct Disposition {
     pub default: i64,
     pub dub: i64,
@@ -256,8 +251,6 @@ pub struct Disposition {
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
-// Allowed to prevent having to break compatibility of float fields are added.
-#[allow(clippy::derive_partial_eq_without_eq)]
 pub struct StreamTags {
     pub language: Option<String>,
     pub creation_time: Option<String>,
@@ -265,6 +258,7 @@ pub struct StreamTags {
     pub encoder: Option<String>,
     pub timecode: Option<String>,
     pub reel_name: Option<String>,
+    pub reel_umid: Option<String>, // PR Request
 }
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
@@ -307,7 +301,6 @@ impl Format {
 
 #[derive(Default, Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 #[cfg_attr(feature = "__internal_deny_unknown_fields", serde(deny_unknown_fields))]
-#[allow(clippy::derive_partial_eq_without_eq)]
 pub struct FormatTags {
     #[serde(rename = "WMFSDKNeeded")]
     pub wmfsdkneeded: Option<String>,
@@ -322,7 +315,18 @@ pub struct FormatTags {
     pub compatible_brands: Option<String>,
     pub creation_time: Option<String>,
     pub encoder: Option<String>,
+    // PR Request
+    pub operational_pattern_ul: Option<String>,
+    pub company_name: Option<String>,
+    pub product_name: Option<String>,
+    pub product_version: Option<String>,
+    pub product_uid: Option<String>,
+    pub modification_date: Option<String>,
+    pub material_package_umid: Option<String>,
+    pub timecode: Option<String>,
 
-    #[serde(flatten)]
-    pub extra: std::collections::HashMap<String, serde_json::Value>,
+    pub uid: Option<String>,
+    pub project_name: Option<String>,
+    pub generation_uid: Option<String>,
+    pub material_package_name: Option<String>,
 }
