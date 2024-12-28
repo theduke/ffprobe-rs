@@ -273,13 +273,10 @@ pub struct Format {
     pub nb_streams: i64,
     pub nb_programs: i64,
     pub format_name: String,
-    #[serde(default)]
-    pub format_long_name: String,
+    pub format_long_name: Option<String>,
     pub start_time: Option<String>,
     pub duration: Option<String>,
-    // FIXME: wrap with Option<_> on next semver breaking release.
-    #[serde(default)]
-    pub size: String,
+    pub size: Option<String>,
     pub bit_rate: Option<String>,
     pub probe_score: i64,
     pub tags: Option<FormatTags>,
