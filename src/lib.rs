@@ -29,6 +29,8 @@ pub fn ffprobe(path: impl AsRef<std::path::Path>) -> Result<FfProbe, FfProbeErro
         Config {
             count_frames: false,
             ffprobe_bin: "ffprobe".into(),
+            user_agent: None,
+            referer: None,
         },
         path,
     )
@@ -57,6 +59,12 @@ pub fn ffprobe_config(
     if config.count_frames {
         cmd.arg("-count_frames");
     }
+    if config.user_agent.is_some() {
+        cmd.arg("-user_agent").arg(config.user_agent.unwrap());
+    }
+    if config.referer.is_some() {
+        cmd.arg("-referer").arg(config.referer.unwrap());
+    }
 
     cmd.arg(path);
 
@@ -80,6 +88,8 @@ pub fn ffprobe_config(
 pub struct Config {
     count_frames: bool,
     ffprobe_bin: std::path::PathBuf,
+    user_agent: Option<String>,
+    referer: Option<String>,
 }
 
 impl Config {
@@ -100,6 +110,8 @@ impl ConfigBuilder {
             config: Config {
                 count_frames: false,
                 ffprobe_bin: "ffprobe".into(),
+                user_agent: None,
+                referer: None,
             },
         }
     }
@@ -116,6 +128,19 @@ impl ConfigBuilder {
     /// for executing `ffprobe`.
     pub fn ffprobe_bin(mut self, ffprobe_bin: impl AsRef<std::path::Path>) -> Self {
         self.config.ffprobe_bin = ffprobe_bin.as_ref().to_path_buf();
+        self
+    }
+
+    /// Override the User-Agent header. If not specified the protocol will use a string describing
+    /// the libavformat build. ("Lavf/<version>")
+    pub fn user_agent(mut self, user_agent: impl Into<String>) -> Self {
+        self.config.user_agent = Some(user_agent.into());
+        self
+    }
+
+    /// Set the Referer header. Include 'Referer: URL' header in HTTP request.
+    pub fn referer(mut self, referer: impl Into<String>) -> Self {
+        self.config.referer = Some(referer.into());
         self
     }
 
