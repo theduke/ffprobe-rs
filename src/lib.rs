@@ -47,7 +47,7 @@ pub fn ffprobe_config(
     // Default args.
     cmd.args([
         "-v",
-        "quiet",
+        "error",
         "-show_format",
         "-show_streams",
         "-print_format",
